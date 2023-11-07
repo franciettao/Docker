@@ -1,0 +1,52 @@
+#installation des dependances 
+
+
+sudo apt install -y apt-transport-https ca-certificates curl gnupg lsb-release
+
+
+curl -fsSL https://download.docker.com/linux/debian/gpg | gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg
+
+
+
+echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/debian $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+
+
+sudo apt install -y docker-ce docker-ce-cli containerd.io docker-compos
+
+sudo usermod -aG docker $USER
+
+sudo systemctl enable docker
+
+sudo docker ps
+docker run hello-world
+
+#!/bin/bash
+
+# Mise à jour du système et installation des dépendances
+sudo apt update
+sudo apt install -y apt-transport-https ca-certificates curl gnupg lsb-release
+
+# Ajout de la clé de signature Docker
+curl -fsSL https://download.docker.com/linux/debian/gpg | sudo gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg
+
+# Ajout du dépôt Docker à la liste des sources
+echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/debian $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+
+# Installation de Docker
+sudo apt update
+sudo apt install -y docker-ce docker-ce-cli containerd.io docker-compose
+
+# Ajout de l'utilisateur actuel au groupe Docker pour exécuter Docker sans sudo
+sudo usermod -aG docker $USER
+
+# Activation du service Docker pour qu'il démarre automatiquement au démarrage
+sudo systemctl enable docker
+
+# Vérification de l'installation en exécutant un conteneur de test
+sudo docker run hello-world
+
+# Affichage du statut des conteneurs Docker en cours d'exécution
+sudo docker ps
+
+# Fin du script
+echo "Docker a été installé avec succès. Vous pouvez maintenant utiliser Docker !"
