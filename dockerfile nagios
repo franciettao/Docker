@@ -1,0 +1,18 @@
+docker network create -d macvlan --subnet=10.8.2.0/24 --gateway=10.8.2.1 -o parent=eth0 macvlan0
+
+# Utilisez une image de base Nagios
+FROM jasonrivers/nagios:latest
+
+# Copiez votre configuration Nagios dans le conteneur
+COPY nagios.cfg /opt/nagios/etc/nagios.cfg
+
+# Créez un répertoire pour stocker les scripts de surveillance
+RUN mkdir /usr/local/nagios-plugins
+
+# Copiez vos scripts de surveillance dans le répertoire
+COPY check_ping /usr/local/nagios-plugins/check_ping
+
+docker build -t mon-nagios .
+docker run -d --name nagios-container --network macvlan0 --ip 10.8.2.251 -v /chemin/vers/nagios.cfg:/opt/nagios/etc/nagios.cfg mon-nagios
+
+docker run -d --name mon-nagios --network macvlan_network --ip 10.8.2.251 -p 8080:80 -p 8443:443 -p 5666:5666 mon-nagios -v /home/user/OUTILS/nagios.cfg:/opt/nagios/etc/nagios.cfg mon-nagios
