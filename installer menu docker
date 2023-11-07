@@ -1,0 +1,89 @@
+#!/bin/bash
+
+# Fonction pour le menu d'installation et configuration
+install_config_menu() {
+    clear
+    echo "Menu Installation et Configuration"
+    PS3="
+Choix : 1(SSH) 2(DBeaver) 3(SNMP) 4(Cockpit) 5(Portainer & Docker) 6(Quitter)
+"
+    select OPTION in "SSH" "DBeaver" "SNMP" "Cockpit" "Portainer & Docker" "Quitter"; do
+        case $OPTION in
+            "SSH")
+                echo "ÉTAPE 6: Installation et configuration de SSH"
+                sudo apt install openssh-server
+                sudo systemctl enable ssh
+                sudo systemctl start ssh
+                ;;
+            "DBeaver")
+                # Ajoutez votre code pour l'installation de DBeaver ici
+                echo "ÉTAPE 7: Installation de DBeaver"
+                ;;
+            "SNMP")
+                # Ajoutez votre code pour l'installation de SNMP ici
+                echo "ÉTAPE 8: Installation de SNMP"
+                ;;
+            "Cockpit")
+                # Ajoutez votre code pour l'installation de Cockpit ici
+                echo "ÉTAPE 9: Installation de Cockpit"
+                ;;
+            "Portainer & Docker")
+                # Ajoutez votre code pour l'installation de Portainer & Docker ici
+                echo "ÉTAPE 10: Installation de Portainer et Docker"
+                ;;
+            "Quitter")
+                break
+                ;;
+            *)
+                echo "Choix invalide"
+                ;;
+        esac
+    done
+}
+
+# Fonction pour le menu de gestion des utilisateurs
+user_management_menu() {
+    clear
+    echo "Menu Gestion des Utilisateurs"
+    # Ajoutez votre code pour le menu de gestion des utilisateurs ici
+}
+
+# Fonction pour le menu de gestion des fichiers et répertoires
+file_management_menu() {
+    clear
+    echo "Menu Gestion des Fichiers et Répertoires"
+    # Ajoutez votre code pour le menu de gestion des fichiers et répertoires ici
+}
+
+# Fonction pour le menu principal
+main_menu() {
+    while true; do
+        clear
+        echo "Menu Principal"
+        PS3="
+Choix : 1(Installation et Configuration) 2(Gestion des Utilisateurs) 3(Gestion des Fichiers et Répertoires) 4(Quitter)
+"
+        select CHOICE in "Installation et Configuration" "Gestion des Utilisateurs" "Gestion des Fichiers et Répertoires" "Quitter"; do
+            case $CHOICE in
+                "Installation et Configuration")
+                    install_config_menu
+                    ;;
+                "Gestion des Utilisateurs")
+                    user_management_menu
+                    ;;
+                "Gestion des Fichiers et Répertoires")
+                    file_management_menu
+                    ;;
+                "Quitter")
+                    exit 0
+                    ;;
+                *)
+                    echo "Choix invalide"
+                    ;;
+            esac
+        done
+    done
+}
+
+# Lancer le menu principal
+main_menu
