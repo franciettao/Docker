@@ -1,0 +1,25 @@
+sudo apt-get update && sudo apt-get install apt-transport-https ca-certificates curl gnupg2 software-properties-common
+curl -fsSL https://download.docker.com/linux/debian/gpg | sudo apt-key add -
+
+sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/debian $(lsb_release -cs) stable"
+
+# Ajouter le référentiel Docker
+sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/debian $(lsb_release -cs) stable"
+
+# Mettre à jour la liste des paquets
+sudo apt update
+
+# Installer Docker
+sudo apt install docker-ce
+sudo usermod -aG docker your-user
+docker login
+ liste rapide de commmande
+docker images pour voir les images dispo
+docker ps pour voir les images actives
+docker pull --truc telecharger des images
+docker stop +container ID pr stopper le container
+docker run -it -d "nom de l'image" tourner en détachée
+docker run hello-world
+docker exec -ti 5c17f6952c46 bash pour agir dans le conteneur fair un docker ps pour voir quel images tourne actuellement.
+docker rm id de l'image
+docker system prune
