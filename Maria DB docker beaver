@@ -1,0 +1,70 @@
+#!/bin/bash
+
+# Fonction pour l'installation de Docker
+install_docker() {
+    sudo apt update
+    sudo apt upgrade -y
+    sudo apt install docker.io -y
+    sudo usermod -aG docker $USER
+    sudo chmod 666 /var/run/docker.sock
+    docker --version
+}
+
+# Fonction pour l'installation de MariaDB
+install_mariadb() {
+    sudo apt update
+    sudo apt upgrade -y
+    sudo apt install mariadb-server -y
+    sudo mysql_secure_installation
+}
+
+# Fonction pour l'installation de PHP
+install_php() {
+    sudo apt update
+    sudo apt upgrade -y
+    sudo apt install php -y
+    php --version
+}
+
+# Fonction pour l'installation de DBeaver
+install_dbeaver() {
+    sudo apt update
+    sudo apt upgrade -y
+    sudo apt install dbeaver-ce -y
+    dbeaver --version
+}
+
+# Affichage du menu
+echo "Menu :"
+echo "1. Installer Docker"
+echo "2. Installer MariaDB"
+echo "3. Installer PHP"
+echo "4. Installer DBeaver"
+echo "5. Quitter"
+
+# Demande de choix à l'utilisateur
+read -p "Choix : " choice
+
+# Traitement du choix
+case $choice in
+    1)
+        install_docker
+        ;;
+    2)
+        install_mariadb
+        ;;
+    3)
+        install_php
+        ;;
+    4)
+        install_dbeaver
+        ;;
+    5)
+        echo "Sortie du script."
+        exit 0
+        ;;
+    *)
+        echo "Choix invalide. Sortie du script."
+        exit 1
+        ;;
+esac
