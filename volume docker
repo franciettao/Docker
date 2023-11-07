@@ -1,0 +1,90 @@
+user1@user1:/mnt/c/Users/jean-$ mkdir /test
+mkdir: cannot create directory ‘/test’: File exists
+user1@user1:/mnt/c/Users/jean-$ mkdir test
+user1@user1:/mnt/c/Users/jean-$ cd test
+user1@user1:/mnt/c/Users/jean-/test$ touch titi.txt
+user1@user1:/mnt/c/Users/jean-/test$ cd ..
+user1@user1:/mnt/c/Users/jean-$ docker run -it --rm -v /mnt/c/Users/jean-/test:/test-container alpine
+/ # ls test-container
+titi.txt
+/ # cd test-container/
+/test-container # touch abs
+/test-container # exit
+user1@user1:/mnt/c/Users/jean-$ cd test
+user1@user1:/mnt/c/Users/jean-/test$ cd test-container
+-bash: cd: test-container: No such file or directory
+user1@user1:/mnt/c/Users/jean-/test$ ls
+abs  titi.txt
+user1@user1:/mnt/c/Users/jean-/test$ docker volume create -name vol-alpine
+unknown shorthand flag: 'n' in -name
+See 'docker volume create --help'.
+user1@user1:/mnt/c/Users/jean-/test$ docker volume create --name vol-alpine
+vol-alpine
+user1@user1:/mnt/c/Users/jean-/test$ sudo docker volume inspect vol-alpine
+[
+    {
+        "CreatedAt": "2023-10-21T07:50:20Z",
+        "Driver": "local",
+        "Labels": null,
+        "Mountpoint": "/var/lib/docker/volumes/vol-alpine/_data",
+        "Name": "vol-alpine",
+        "Options": null,
+        "Scope": "local"
+    }
+]
+user1@user1:/mnt/c/Users/jean-/test$ docker volume create --name vol-nginx
+vol-nginx
+user1@user1:/mnt/c/Users/jean-/test$ docker volume inspect vol-nginx
+[
+    {
+        "CreatedAt": "2023-10-21T07:53:45Z",
+        "Driver": "local",
+        "Labels": null,
+        "Mountpoint": "/var/lib/docker/volumes/vol-nginx/_data",
+        "Name": "vol-nginx",
+        "Options": null,
+        "Scope": "local"
+    }
+]
+user1@user1:/mnt/c/Users/jean-/test$ sudo docker volume create --name vol-te
+st
+vol-test
+user1@user1:/mnt/c/Users/jean-/test$ docker volume ls
+DRIVER    VOLUME NAME
+local     test
+local     vol-alpine
+local     vol-nginx
+local     vol-test
+user1@user1:/mnt/c/Users/jean-/test$ sudo docker volume rm vol-test
+vol-test
+user1@user1:/mnt/c/Users/jean-/test$ docker volume ls
+DRIVER    VOLUME NAME
+local     test
+local     vol-alpine
+local     vol-nginx
+user1@user1:/mnt/c/Users/jean-/test$ docker run -it -v vol-alpine:/repshare1
+ --name test1 alpine
+/ # ch repshare1/
+/bin/sh: ch: not found
+/ # cd repshare1/
+/repshare1 # ls
+/repshare1 # tohc test1.txt
+/bin/sh: tohc: not found
+/repshare1 # touch test1.txt
+/repshare1 # exit
+user1@user1:/mnt/c/Users/jean-/test$ docker run -it -v vol-alpine:/repshare2 --name test2 alpine
+/ # cd repshare2
+/repshare2 # ls
+test1.txt
+/repshare2 # ls
+test1.txt
+/repshare2 # touch test2.txt
+/repshare2 # exit
+user1@user1:/mnt/c/Users/jean-/test$ docker start -i test1
+/ # ls
+bin        home       mnt        repshare1  sbin       tmp
+dev        lib        opt        root       srv        usr
+etc        media      proc       run        sys        var
+/ # ls repshare1/
+test1.txt  test2.txt
+/ #
