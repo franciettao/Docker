@@ -1,0 +1,108 @@
+# creation d'une image httpd/openssh
+mkdir image_ssh
+cd image_ssh
+nano dockerfile
+# Utilisez une image de base avec httpd
+FROM httpd:latest
+# Installez OpenSSH
+RUN apt-get update && apt-get install -y openssh-server
+# Démarrez le service OpenSSH
+RUN service ssh start
+# Exposez le port SSH (22) et le port HTTP (80)
+EXPOSE 22 80
+#je crée avec une commande l'image souhaité
+docker build -t image_ssh /mnt/c/Users/jean-/image_ssh
+#je crée une image ubuntu pour installer mysql et openssh
+mkdir mysql_ssh
+cd mysql_ssh
+
+nano Dockerfile
+# Utilisez l'image Ubuntu comme base
+FROM ubuntu:latest
+# Installez MySQL et OpenSSH Server
+RUN apt-get update && apt-get install -y mysql-server openssh-server
+# Répertoire de travail
+WORKDIR /
+# Générez une paire de clés SSH
+RUN ssh-keygen -A
+# Exécutez le serveur SSH et MySQL au démarrage
+CMD ["/usr/sbin/sshd", "-D"]
+
+#démarrer la création d'une image ubuntu avec mysql openshh
+docker build -t mysql_ssh/mnt/c/Users/jean-/mysql_ssh
+
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+#crée un reseau qui contiendra les deux conteneurs
+docker network create net_ansible
+#on verifie
+docker network ls
+#on incremante mysql et httpd au network
+docker run -d --name mysql_ssh --network net_ansible mysql_ssh
+docker run -d --name image_ssh --network net_ansible image_ssh
+!!!!Peut etre mettre sur le reseau host oy en bridge pour faire fonctionner!!!!!
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+
+#on verifie
+docker network inspect net_ansible
+docker ps
+#installation de l'environnement virtuel et de ansible
+# Créer un nouvel utilisateur pour Ansible
+# Installer OpenSSH Server et Virtualenv
+sudo apt install openssh-server -y
+sudo apt install virtualenv -y
+
+# Créer d'une vm avec python et d'un nouvel utilisateur pour Ansible
+sudo adduser user
+sudo passwd user
+sudo usermod -aG sudo user
+sudo apt install python3-venv
+sudo python3 -m venv ansible-venv
+source ansible-venv/bin/activate
+#je peux enfin installer ansible
+pip install ansible
+
+Version chatgpt non testé en dessous
+
+# Créez un fichier d'inventaire Ansible pour répertorier vos serveurs
+nano inventaire.ini
+# Ajoutez les adresses IP ou noms d'hôtes de vos serveurs, par exemple :
+[serveurs]
+192.168.1.101
+192.168.1.102
+
+# Exécutez un ping vers tous les serveurs pour vérifier la connectivité
+ansible -i inventaire.ini -m ping all --ask-pass
+
+# Assurez-vous que le SSH est configuré pour permettre une connexion sans le paramètre "PermitRootLogin yes" dans /etc/ssh/sshd_config
+# Vous pouvez éditer ce fichier si nécessaire.
+
+# Installez Nagios sur votre machine locale (WSL)
+# Vous pouvez suivre les instructions de l'installation de Nagios ici : https://assets.nagios.com/downloads/nagioscore/docs/nagioscore/4/en/quickstart.html
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! pas de commande ad hoc trouver les fichier en YML
+# Installez le plug-in NRPE sur les serveurs distants
+ansible -i inventaire.ini -m shell -a 'apt-get update && apt-get install -y nagios-nrpe-server' --ask-pass
+
+# Configurez NRPE pour accepter les sondes de Nagios
+# Vous devez éditer le fichier /etc/nagios/nrpe.cfg pour ajouter des règles NRPE spécifiques à chaque sonde que vous souhaitez exécuter.
+
+# Redémarrez le service NRPE
+ansible -i inventaire.ini -m service -a 'name=nagios-nrpe-server state=restarted' --ask-pass
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
