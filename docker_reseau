@@ -1,0 +1,42 @@
+#on crée un reseau par pont et on le nom my-bridge
+docker network create my-bridge
+docker network ls
+docker network inspect my-bridge
+#on ajoute deux conteneur dans le reseau crée
+docker run -dit --name alpine1 --network my-bridge alpine
+docker run -dit --name alpine2 --network my-bridge alpine
+docker network inspect my-bridge
+docker exec alpine1 ping -c 4 172.18.0.3
+#on install nginx sous le nom my-nginx dans le reseau host
+docker run -d --network host --name my-nginx nginx
+#on laisse passer en 80
+docker exec -it my-nginx bash
+apt update
+apt install net-tools
+netstat -tulpn | grep :80
+#onsupprime
+docker container stop my-nginx
+#on supprime le reseau alpine1/2
+docker network disconnect my-bridge alpine1
+docker network disconnect my-bridge alpine2
+docker exec alpine1 ping -c 4 172.18.0.3
+docker network inspect my-bridge
+#le reseau bridge et en /16 en le passant en /24 on se crée un sous reseau
+docker network create –driver bridge –subnet=172.20.10.0/24 –gateway=172.20.10.1 my-bridge
+
+#Un réseau Macvlan est un type de réseau dans Docker qui permet à un conteneur #d'être directement connecté à un réseau externe sous un sous-réseau différent du ##réseau hôte. Contrairement aux réseaux de type Bridge, où les conteneurs #partagent généralement la plage d'adresses IP du réseau hôte, les réseaux Macvlan #attribuent à chaque conteneur une adresse IP unique sur le réseau externe. Cela #les rend similaires aux machines physiques connectées directement à un réseau.
+
+docker network create -d macvlan --subnet=192.168.1.0/24 --gateway=192.168.1.254 -o parent=ens33 my-vlan
+docker network inspect my-vlan
+docker network connect my-vlan alpine1
+docker run -dit --name web1 --network my-vlan httpd
+docker inspect alpine1 | grep "IPAddress"
+docker inspect web1 | grep "IPAddress"
+#sur l'hote
+sudo ip link add macvlan_int link ens33 type macvlan mode bridge
+sudo ip address add 192.168.1.1/32 dev macvlan_int #(on associe @ip du container alpine1 à l’interface)
+sudo ip address add 192.168.1.2/32 dev macvlan_int #(on associe @ip du container web1 à l’interface)
+sudo ip link set macvlan_int up #(on active)
+sudo ip route add ip-de_l’hote/24 dev macvlan_int
+
+
